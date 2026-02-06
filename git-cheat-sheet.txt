@@ -1,0 +1,11 @@
+GIT COMMAND CHEAT SHEET
+
+init - Makes and initialises a new git repository in the current directory or folder.
+
+show - Display the changes made in a specific commit.
+
+log  - View the commit history of the repository.
+
+checkout - switches between branches or previous commits.
+
+reset - Undo all staging and can undo commits.
