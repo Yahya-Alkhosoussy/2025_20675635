@@ -2,8 +2,9 @@
 #include <sstream>
 #include "adder.h"
 
-int main2(int argc, char *argv[]){
+int main(int argc, char *argv[]){
     int a, b, c;
+    std::cout << "Running" << std::endl;
     if (argc != 3) return 1;
     
     std::string sa = argv[1];
