@@ -44,6 +44,11 @@ Thumbs.db
 ##################################
 .vs
 
+# Xcode Specific Config #
+#########################
+*.xcworkspace
+*.xcodeproj
+
 # Library and executables #
 ###########################
 *.dylib
@@ -51,3 +56,7 @@ Thumbs.db
 *.a
 *.lib
 program
+build/
+builds/
+build_static/
+build_dynamic/
