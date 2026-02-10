@@ -43,3 +43,11 @@ Thumbs.db
 # Visual Studio Specific Configs #
 ##################################
 .vs
+
+# Library and executables #
+###########################
+*.dylib
+*.dll
+*.a
+*.lib
+program
