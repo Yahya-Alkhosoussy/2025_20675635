@@ -60,3 +60,12 @@ build/
 builds/
 build_static/
 build_dynamic/
+
+# images #
+##########
+*.png
+*.jpeg
+
+# QT files #
+############
+.qtcreator

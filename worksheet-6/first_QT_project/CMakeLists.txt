@@ -5,6 +5,8 @@ set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY "")
 set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "NO")
 set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_ALLOWED "NO")
 
+set(CMAKE_AUTOMOC ON)
+
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
 
 qt_standard_project_setup()
@@ -15,7 +17,15 @@ qt_add_executable(first_QT_project
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    ModelPart.cpp
+    ModelPart.h
+    ModelPartList.cpp
+    ModelPartList.h
+    icons.qrc
+    dialog.h dialog.cpp dialog.ui
 )
+
+
 
 target_link_libraries(first_QT_project
     PRIVATE
