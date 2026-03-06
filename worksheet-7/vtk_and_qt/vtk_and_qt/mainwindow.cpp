@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     this->partList = new ModelPartList("PartsList");
 
+    // set up tree
     populateTree();
     
     /* Link it to the tree view in the GUI */
@@ -39,26 +40,6 @@ MainWindow::MainWindow(QWidget *parent)
     renderer = vtkSmartPointer<vtkRenderer>::New();
     renderWindow->AddRenderer(renderer);
 
-    /* Create cylinder */
-    vtkNew<vtkCylinderSource> cylinder;
-    cylinder->SetResolution(8);
-
-    vtkNew<vtkPolyDataMapper> cylinderMapper;
-    cylinderMapper->SetInputConnection(cylinder->GetOutputPort());
-
-    vtkNew<vtkActor> cylinderActor;
-    cylinderActor->SetMapper(cylinderMapper);
-    cylinderActor->GetProperty()->SetColor(1., 0., 0.35);
-    cylinderActor->RotateX(30.0);
-    cylinderActor->RotateY(-45.0);
-
-    renderer->AddActor(cylinderActor);
-
-    /* Reset camera */
-    renderer->ResetCamera();
-    renderer->GetActiveCamera()->Azimuth(30);
-    renderer->GetActiveCamera()->Elevation(30);
-    renderer->ResetCameraClippingRange();
 
     connect(ui->pushButton, &QPushButton::released, this, &MainWindow::handleButton);
     connect(ui->pushButton_2, &QPushButton::released, this, &MainWindow::handleButton2);
@@ -139,6 +120,13 @@ void MainWindow::handleTreeClicked() {
     QString text = selectedPart->data(0).toString();
 
     emit statusUpdateMessage(QString("The selected item is: ") + text, 0);
+    
+    renderer->RemoveAllViewProps();
+    updateRenderFromTree(index);
+    renderer->ResetCamera();
+    renderer->ResetCameraClippingRange();
+    renderer->Render();
+    ui->vtkWidget->renderWindow()->Render();
 }
 
 
@@ -154,7 +142,8 @@ void MainWindow::on_actionOpen_file_triggered(){
             QString justFileName = fileInfo.fileName();
             selectedPart->set(0, justFileName);
             emit statusUpdateMessage(QString("Opened: ") + justFileName, 0);
-
+            selectedPart->loadSTL(fileName);
+            updateRenderer();
             /* Refresh the treeview to show the updated name */
             ui->treeView->viewport()->update();
         } else {
@@ -162,6 +151,38 @@ void MainWindow::on_actionOpen_file_triggered(){
         }
     }
     
+}
+
+void MainWindow::updateRenderer() {
+    renderer->RemoveAllViewProps();
+    int rows = partList->rowCount(QModelIndex());
+    for (int i = 0; i < rows; i++) {
+        updateRenderFromTree(partList->index(i, 0, QModelIndex()));
+    }
+    renderer->Render();
+    renderer->ResetCamera();
+}
+
+void MainWindow::updateRenderFromTree(const QModelIndex& index) {
+    if (index.isValid()) {
+        ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
+        
+        if (selectedPart->visible()) {
+            vtkSmartPointer<vtkActor> actor = selectedPart->getActor();
+            if (actor != nullptr) {
+                renderer->AddActor(actor);
+            }
+        }
+    }
+
+    if (!partList->hasChildren(index) || (index.flags() & Qt::ItemNeverHasChildren)) {
+        return;
+    }
+
+    int rows = partList->rowCount(index);
+    for (int i = 0; i < rows; i++) {
+        updateRenderFromTree(partList->index(i, 0, index));
+    }
 }
 
 MainWindow::~MainWindow()

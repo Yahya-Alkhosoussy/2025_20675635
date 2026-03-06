@@ -10,7 +10,7 @@
 #include <vtkPolyDataMapper.h>
 #include <vtkActor.h>
 #include <vtkNew.h>
-#include "ModelPartList.h"
+#include "modelPartList.h"
 #include "dialog.h"
 
 QT_BEGIN_NAMESPACE
@@ -30,6 +30,8 @@ class MainWindow : public QMainWindow
         void on_actionOpen_file_triggered();
         void on_actionItem_Options_triggered();
         void populateTree();
+        void updateRenderer();
+        void updateRenderFromTree(const QModelIndex& index);
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
