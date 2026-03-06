@@ -10,6 +10,9 @@ set(CMAKE_AUTOMOC ON)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
 
+set(CMAKE_INSTALL_RPATH "/opt/homebrew/lib")
+set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+
 qt_standard_project_setup()
 
 qt_add_executable(first_QT_project

@@ -2,7 +2,7 @@
 #define DIALOG_H
 
 #include <QDialog>
-#include "ModelPart.h"
+#include "modelPart.h"
 
 namespace Ui {
 class Dialog;

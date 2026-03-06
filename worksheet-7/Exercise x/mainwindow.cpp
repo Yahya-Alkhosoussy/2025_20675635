@@ -1,6 +1,22 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <QTreeView>
+#include <QPushButton>
+#include <QStatusBar>
+#include <QFileDialog>
+#include <QDir>
+#include <QFileInfo>
+
+#include <vtkGenericOpenGLRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkCylinderSource.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkProperty.h>
+#include <vtkCamera.h>
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -14,6 +30,35 @@ MainWindow::MainWindow(QWidget *parent)
     /* Link it to the tree view in the GUI */
     ui->treeView->setModel(this->partList);
     ui->treeView->addAction(ui->actionItem_Options);
+    
+    /* Link a render window with the Qt widget */
+    renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+    ui->vtkWidget->setRenderWindow(renderWindow);
+
+    /* Add a renderer */
+    renderer = vtkSmartPointer<vtkRenderer>::New();
+    renderWindow->AddRenderer(renderer);
+
+    /* Create cylinder */
+    vtkNew<vtkCylinderSource> cylinder;
+    cylinder->SetResolution(8);
+
+    vtkNew<vtkPolyDataMapper> cylinderMapper;
+    cylinderMapper->SetInputConnection(cylinder->GetOutputPort());
+
+    vtkNew<vtkActor> cylinderActor;
+    cylinderActor->SetMapper(cylinderMapper);
+    cylinderActor->GetProperty()->SetColor(1., 0., 0.35);
+    cylinderActor->RotateX(30.0);
+    cylinderActor->RotateY(-45.0);
+
+    renderer->AddActor(cylinderActor);
+
+    /* Reset camera */
+    renderer->ResetCamera();
+    renderer->GetActiveCamera()->Azimuth(30);
+    renderer->GetActiveCamera()->Elevation(30);
+    renderer->ResetCameraClippingRange();
 
     connect(ui->pushButton, &QPushButton::released, this, &MainWindow::handleButton);
     connect(ui->pushButton_2, &QPushButton::released, this, &MainWindow::handleButton2);
@@ -108,6 +153,8 @@ void MainWindow::on_actionOpen_file_triggered(){
             QFileInfo fileInfo(fileName);
             QString justFileName = fileInfo.fileName();
             selectedPart->set(0, justFileName);
+            selectedPart->loadSTL(fileName);
+            updateRender();
             emit statusUpdateMessage(QString("Opened: ") + justFileName, 0);
 
             /* Refresh the treeview to show the updated name */
@@ -119,7 +166,37 @@ void MainWindow::on_actionOpen_file_triggered(){
     
 }
 
+void MainWindow::updateRender() {
+    renderer->RemoveAllViewProps();
+    updateRenderFromTree(partList->index(0, 0, QModelIndex()));
+    renderer->Render();
+    renderer->ResetCamera();
+}
+
+void MainWindow::updateRenderFromTree(const QModelIndex& index) {
+    if (index.isValid()) {
+        ModelPart* selectedPart = static_cast<ModelPart*>(index.internalPointer());
+        
+        if (selectedPart->visible()) {
+            vtkSmartPointer<vtkActor> actor = selectedPart->getActor();
+            if (actor != nullptr) {
+                renderer->AddActor(actor);
+            }
+        }
+    }
+
+    if (!partList->hasChildren(index) || (index.flags() & Qt::ItemNeverHasChildren)) {
+        return;
+    }
+
+    int rows = partList->rowCount(index);
+    for (int i = 0; i < rows; i++) {
+        updateRenderFromTree(partList->index(i, 0, index));
+    }
+}
+
 MainWindow::~MainWindow()
 {
     delete ui;
 }
+

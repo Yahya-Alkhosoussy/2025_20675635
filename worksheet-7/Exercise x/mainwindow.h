@@ -3,7 +3,14 @@
 
 #include <QMainWindow>
 #include <QMessageBox>
-#include "modelPartList.h"
+#include <vtkSmartPointer.h>
+#include <vtkRenderer.h>
+#include <vtkGenericOpenGLRenderWindow.h>
+#include <vtkCylinderSource.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkActor.h>
+#include <vtkNew.h>
+#include "ModelPartList.h"
 #include "dialog.h"
 
 QT_BEGIN_NAMESPACE
@@ -23,6 +30,8 @@ class MainWindow : public QMainWindow
         void on_actionOpen_file_triggered();
         void on_actionItem_Options_triggered();
         void populateTree();
+        void updateRender();
+        void updateRenderFromTree(const QModelIndex& index);
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
@@ -33,5 +42,7 @@ signals:
 private:
     Ui::MainWindow *ui;
     ModelPartList* partList;
+    vtkSmartPointer<vtkRenderer> renderer;
+    vtkSmartPointer<vtkGenericOpenGLRenderWindow> renderWindow;
 };
 #endif // MAINWINDOW_H

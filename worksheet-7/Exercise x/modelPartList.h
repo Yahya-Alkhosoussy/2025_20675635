@@ -11,7 +11,7 @@
 #define VIEWER_MODELPARTLIST_H
 
 
-#include "ModelPart.h"
+#include "modelPart.h"
 
 #include <QAbstractItemModel>
 #include <QModelIndex>

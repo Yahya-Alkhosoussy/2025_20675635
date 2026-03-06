@@ -17,20 +17,20 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="widget" native="true">
+   <widget class="QVTKOpenGLNativeWidget" name="vtkWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>380</x>
-      <y>80</y>
-      <width>341</width>
-      <height>191</height>
+      <x>400</x>
+      <y>30</y>
+      <width>321</width>
+      <height>411</height>
      </rect>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton">
     <property name="geometry">
      <rect>
-      <x>110</x>
+      <x>60</x>
       <y>450</y>
       <width>100</width>
       <height>32</height>
@@ -43,7 +43,7 @@
    <widget class="QPushButton" name="pushButton_2">
     <property name="geometry">
      <rect>
-      <x>330</x>
+      <x>210</x>
       <y>450</y>
       <width>100</width>
       <height>32</height>
@@ -58,7 +58,7 @@
      <rect>
       <x>60</x>
       <y>20</y>
-      <width>401</width>
+      <width>251</width>
       <height>421</height>
      </rect>
     </property>
@@ -116,6 +116,14 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QVTKOpenGLNativeWidget</class>
+   <extends>QWidget</extends>
+   <header>QVTKOpenGLNativeWidget.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="icons.qrc"/>
  </resources>
